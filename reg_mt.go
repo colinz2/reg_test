@@ -31,7 +31,7 @@ var exps = []string {
 }
 
 func main() {
-    content, err := ioutil.ReadFile("mtent12.txt")
+    content, err := ioutil.ReadFile("data/mtent12.txt")
     if err != nil {
         log.Fatal(err)
     }

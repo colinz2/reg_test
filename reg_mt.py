@@ -41,7 +41,7 @@ def read_file(cvd_file_name):
 
 def run():
     start = clock()
-    file_content_str = read_file("mtent12.txt")
+    file_content_str = read_file("data/mtent12.txt")
     print("file len is : %d, takes %f " % (len(file_content_str), clock() - start))
 
     start = clock()

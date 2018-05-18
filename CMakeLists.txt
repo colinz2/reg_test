@@ -3,6 +3,13 @@ project(reg)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(reg main.cpp)
+link_directories(local/lib)
+include_directories(local/include)
 
-target_link_libraries(reg pcre)
+set(CMAKE_CXX_FLAGS
+        "${CMAKE_CXX_FLAGS} -g"
+        )
+
+add_executable(reg reg_test.cc reg_pcre.cc reg_hyperscan.cc)
+
+target_link_libraries(reg pcre hs hs)
