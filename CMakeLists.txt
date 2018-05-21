@@ -4,6 +4,8 @@ project(reg)
 set(CMAKE_CXX_STANDARD 11)
 
 link_directories(local/lib)
+link_directories(local/lib64)
+
 include_directories(local/include)
 
 set(CMAKE_CXX_FLAGS

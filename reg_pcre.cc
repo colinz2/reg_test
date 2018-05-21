@@ -1,15 +1,17 @@
 #include <iostream>
 
+#include <string.h>
 #include "pcre.h"
 
 #include <string>
 #include <vector>
 
-#define OVECCOUNT 30000 /* should be a multiple of 3 */
+#include <chrono>
+
 
 std::vector<pcre*> g_pcre_patterns;
 
-int pcre_build(std::vector<std::string> regs)
+int _pcre_build(std::vector<std::string> regs)
 {
     const char *error;
     int erroffset;
@@ -25,22 +27,46 @@ int pcre_build(std::vector<std::string> regs)
     return 0;
 }
 
-int pcre_math(const char* src, ssize_t len)
+int _pcre_math(const char* src, ssize_t len)
 {
     int ret = 0;
-    int ovector[OVECCOUNT];
+    int cnt = 0, index = 0, offset = 0;
+    const int OVECCOUNT = 30; /* should be a multiple of 3 */
+    int ovector[OVECCOUNT] = {0, };
+
+    const char* m = "Twain Twain Twasin Twain ";
 
     for (auto p : g_pcre_patterns) {
-        ret = pcre_exec(p, NULL, src, len, 0, 0, ovector, OVECCOUNT);
-        if (ret == PCRE_ERROR_NOMATCH)
-        {
-            printf("Sorry, no match ...\n");
-        }
-        else
-        {
-            printf("ret = %d \n", ret);
-        }
+        cnt = 0;
+        offset = 0;
+        memset(ovector, 0, sizeof(ovector));
+
+        auto start = std::chrono::system_clock::now();
+
+        do {
+            ret = pcre_exec(p, NULL, src, len, offset, 0, ovector, OVECCOUNT);
+            if (ret > 0)
+            {
+                offset = ovector[1];
+                //printf("ret = %d , offset = %d \n", ret, offset);
+                cnt += ret;
+            }
+        } while(ret > 0);
+
+        auto end = std::chrono::system_clock::now();
+
+        std::chrono::duration<double> elapsed_seconds = end - start;
+
+        printf("%02d: match:%d takes:%f\n", index, cnt, elapsed_seconds.count());
+        index++;
     }
     return  0;
+}
+
+
+int pcre_test(std::vector<std::string> regs, const char* src, ssize_t len)
+{
+    _pcre_build(regs);
+    return _pcre_math(src, len);
 }
 

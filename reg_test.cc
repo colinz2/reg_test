@@ -10,9 +10,8 @@
 #include <string>
 #include <vector>
 
-extern int pcre_build(std::vector<std::string> regs);
-extern int pcre_math(const char* src, ssize_t len);
-extern void hs_test();
+extern int pcre_test(std::vector<std::string> regs, const char* src, ssize_t len);
+extern int hs_test(std::vector<std::string> regs, const char* src, ssize_t len);
 
 const char patterns[][128] = {
     "Twain",
@@ -70,16 +69,18 @@ int main()
 {
     Mmap mmap;
     std::vector<std::string> regs;
-    load_file("data/mtent12.txt", &mmap);
+    int ret = load_file("data/mtent12.txt", &mmap);
+    if (ret < 0) {
+        fprintf(stderr, "fail to load \n");
+        return -1;
+    }
 
     for (int i = 0; i < sizeof(patterns) / 128; i++) {
         regs.push_back(std::string(patterns[i]));
     }
 
-    pcre_build(regs);
-    pcre_math(mmap.data, mmap.length);
-
-    hs_test();
+    pcre_test(regs, mmap.data, mmap.length);
+    hs_test(regs, mmap.data, mmap.length);
 
     return 0;
 }
