@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <string.h>
 
 #include <string>
 #include <vector>
@@ -66,8 +67,35 @@ int load_file(const char* filename, Mmap* mp)
     return 0;
 }
 
+int load_reg_file(std::vector<std::string>& regs)
+{
+    Mmap fm;
+    int ret = 0;
+    ret = load_file("./reg.txt", &fm);
+    if (ret < 0) {
+        return -1;
+    }
+
+    char buff[2048];
+    for (size_t j = 0, one_line_cnt = 0; j < fm.length; j++) {
+        if (fm.data[j] != '\n') {
+            one_line_cnt++;
+            continue;
+        }
+        memset(buff, 0, sizeof(buff));
+        memcpy(buff, &fm.data[j - one_line_cnt], one_line_cnt>2048?2048:one_line_cnt);
+        fm.data[one_line_cnt] = 0;
+        one_line_cnt = 0;
+
+        regs.push_back(buff);
+    }
+
+    return 0;
+}
+
 int main()
 {
+
     Mmap mmap;
     std::vector<std::string> regs;
     int ret = load_file("data/mtent12.txt", &mmap);
@@ -76,8 +104,11 @@ int main()
         return -1;
     }
 
-    for (int i = 0; i < sizeof(patterns) / 128; i++) {
-        regs.push_back(std::string(patterns[i]));
+
+    if (load_reg_file(regs) < 0) {
+        for (int i = 0; i < sizeof(patterns) / 128; i++) {
+            regs.push_back(std::string(patterns[i]));
+        }
     }
 
     //pcre_test(regs, mmap.data, mmap.length);
