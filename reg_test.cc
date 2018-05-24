@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+
 extern int pcre_test(std::vector<std::string> regs, const char* src, ssize_t len);
 extern int hs_test(std::vector<std::string> regs, const char* src, ssize_t len);
 
@@ -79,7 +80,7 @@ int main()
         regs.push_back(std::string(patterns[i]));
     }
 
-    pcre_test(regs, mmap.data, mmap.length);
+    //pcre_test(regs, mmap.data, mmap.length);
     hs_test(regs, mmap.data, mmap.length);
 
     return 0;

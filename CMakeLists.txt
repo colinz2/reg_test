@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(reg)
+project(reg_test)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -12,6 +12,9 @@ set(CMAKE_CXX_FLAGS
         "${CMAKE_CXX_FLAGS} -g"
         )
 
-add_executable(reg reg_test.cc reg_pcre.cc reg_hyperscan.cc)
 
-target_link_libraries(reg pcre hs hs)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_executable(reg_test reg_test.cc reg_pcre.cc reg_hyperscan.cc)
+target_link_libraries(reg_test pcre hs hs_runtime)
+

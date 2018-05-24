@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 VENDORS_DIR=`pwd`/vendors
 INSTALL_DIR=`pwd`/local
 FIRST_DIR=`pwd`
