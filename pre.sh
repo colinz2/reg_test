@@ -28,7 +28,7 @@ build_hyperscan()
     build_dir=$VENDORS_DIR/hyperscan/build
     mkdir -p ${build_dir} && cd  ${build_dir}
     cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBOOST_ROOT=$VENDORS_DIR/boost_1_67_0 -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR  .. 
-    make -j4 install
+    make -j2 install
     cd  $FIRST_DIR
 }
 

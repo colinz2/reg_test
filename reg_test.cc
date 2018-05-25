@@ -71,8 +71,13 @@ int load_reg_file(std::vector<std::string>& regs)
 {
     Mmap fm;
     int ret = 0;
-    ret = load_file("./reg.txt", &fm);
+    ret = load_file("data/reg.txt", &fm);
     if (ret < 0) {
+        return -1;
+    }
+
+    FILE* fp = fopen("data/reg_check.txt", "w");
+    if (fp == nullptr) {
         return -1;
     }
 
@@ -88,7 +93,10 @@ int load_reg_file(std::vector<std::string>& regs)
         one_line_cnt = 0;
 
         regs.push_back(buff);
+        fprintf(fp, "%lu:/%s/\n", regs.size(), buff);
     }
+
+    fclose(fp);
 
     return 0;
 }

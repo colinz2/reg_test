@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include <string>
 #include <vector>
@@ -58,7 +59,8 @@ static hs_database_t* buildDatabase(const std::vector<const char*> &expressions,
         if (compileErr->expression < 0) {
             fprintf(stderr, "ERROR:hs_compile_multi: %s\n", compileErr->message);
         } else {
-            fprintf(stderr, "ERROR:hs_compile_multi: %s: %s\n"
+            fprintf(stderr, "ERROR:hs_compile_multi: %03d, %s: %s\n"
+                            , compileErr->expression
                     , expressions[compileErr->expression]
                     , compileErr->message);
         }
@@ -69,18 +71,41 @@ static hs_database_t* buildDatabase(const std::vector<const char*> &expressions,
 }
 
 
+//vendors/hyperscan/build/bin/hscheck -e reg_check.txt
+int hs_pattern_check(const char* pattern)
+{
+    hs_expr_info_t *info = nullptr;
+    hs_compile_error_t *compile_err = nullptr;
+
+    hs_error_t err = hs_expression_info(pattern, HS_FLAG_DOTALL, &info, &compile_err);
+    if (err != 0) {
+        fprintf(stderr, "ERROR:%d,%s,%s\n", err, pattern, compile_err->message);
+    }
+
+    free(info);
+    hs_free_compile_error(compile_err);
+//    if (compile_err != nullptr) {
+//        fprintf(stderr, "\t:%d,compile_err \n", err);
+//        return -1;
+//    }
+    return err;
+}
+
+
 int hs_test(std::vector<std::string> patterns, const char* src, ssize_t len)
 {
     printf("hs_version:%s , valid:%d\n", hs_version(), hs_valid_platform());
 
     Matcher matcher;
-
     unsigned int index = 0;
     for (const auto &pattern : patterns) {
-        matcher.cstrPatterns.push_back(pattern.c_str());
-        matcher.flags.push_back(HS_FLAG_DOTALL);
-        matcher.ids.push_back(index++);
-        matcher.match_cnt.push_back(0);
+        if (hs_pattern_check(pattern.c_str()) == 0) 
+        {
+            matcher.cstrPatterns.push_back(pattern.c_str());
+            matcher.flags.push_back(HS_FLAG_DOTALL);
+            matcher.ids.push_back(index++);
+            matcher.match_cnt.push_back(0);
+        }
     }
 
     hs_database_t* db = buildDatabase(matcher.cstrPatterns, matcher.flags, matcher.ids, HS_MODE_BLOCK);
