@@ -5,6 +5,7 @@ FIRST_DIR=`pwd`
 
 get_hyperscan()
 {
+    mkdir -p $VENDORS_DIR
     if [[ ! -f  $VENDORS_DIR/boost_1_67_0.tar.gz ]]; then
         wget https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.gz  -O  $VENDORS_DIR/boost_1_67_0.tar.gz
     fi
